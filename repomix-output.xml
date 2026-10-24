@@ -1,0 +1,561 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+bin/
+  www
+public/
+  stylesheets/
+    style.css
+routes/
+  index.js
+  users.js
+views/
+  dispatcher.pug
+  error.pug
+  index.pug
+  layout.pug
+  passenger.pug
+.gitignore
+app.js
+package.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="bin/www">
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('csc305fa26project:server');
+var http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+</file>
+
+<file path="public/stylesheets/style.css">
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.form_control {
+  padding: 0 0.1em 1ex;
+}
+
+label.left {
+  padding: 0 0.5em 0 0;
+}
+
+/* Mark required, valid, and invalid form elements */
+output.flag::before {
+    color: firebrick;
+    content: '*';
+}
+
+:valid + output.flag::before, output.flag.valid::before, 
+:valid + label + output.flag::before {
+    color: green;
+    content: '✓';
+}
+
+.invalid {
+    color: firebrick;
+}
+
+.valid {
+    color: green;
+}
+</file>
+
+<file path="routes/index.js">
+var express = require('express');
+var router = express.Router();
+
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  let formdata = req.query;
+  console.log('Formdata:', formdata);
+  let page = 'index';
+  let title = 'Grasshopper Air'
+  if (formdata.role) {
+    page = formdata.role.toLowerCase();
+    title = formdata.role
+  }
+  res.render(page, { 
+    title: title,
+    formdata: formdata,
+    role: formdata.role
+  });
+});
+
+module.exports = router;
+</file>
+
+<file path="routes/users.js">
+var express = require('express');
+var router = express.Router();
+
+/* GET users listing. */
+router.get('/', function(req, res, next) {
+  res.send('respond with a resource');
+});
+
+module.exports = router;
+</file>
+
+<file path="views/dispatcher.pug">
+extends layout
+
+block content
+  h1= title
+  div(id="form")
+    form(action="",method="get")
+      input(type="hidden",name="ID",value=`${formdata.ID}`)
+      input(type="hidden",name="role",value="Dispatcher")
+      input(type="submit")
+
+  if formdata.role
+    table
+      caption
+        h2 Form data
+      tr
+        th Key 
+        th Value 
+      each value, key in formdata
+        tr 
+          td= key 
+          td= value
+  else
+    h2 No form data
+</file>
+
+<file path="views/error.pug">
+extends layout
+
+block content
+  h1= message
+  h2= error.status
+  pre #{error.stack}
+</file>
+
+<file path="views/index.pug">
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  div(id="form")
+    form(action="",method="get")
+      if formdata.ID
+        input(type="hidden",name="ID",value="${formdata.ID}")
+      else
+        div(class="form_control")
+          label(class="left",for="ID") ID:
+          input(type="text",name="ID",id="ID")
+
+      if formdata.role
+        input(type="hidden",name="role",value="#{formdata.role}")
+      else
+        div(class="form_control")
+          label(class="left",for="role") Role: 
+          select(name="role",id="role",required)
+            option(value="") &mdash;Please select a role&mdash;
+            option Passenger 
+            option Dispatcher
+          output(class="flag")
+      input(type="submit")
+
+  if formdata.role
+    table
+      caption
+        h2 Form data
+      tr
+        th Key 
+        th Value 
+      each value, key in formdata
+        tr 
+          td= key 
+          td= value
+  else
+    h2 No form data
+</file>
+
+<file path="views/layout.pug">
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    block content
+</file>
+
+<file path="views/passenger.pug">
+extends layout
+
+block content
+  h1= title
+  div(id="form")
+    form(action="",method="get")
+      input(type="hidden",name="ID",value=`${formdata.ID}`)
+      input(type="hidden",name="role",value="Passenger")
+      input(type="submit")
+
+  if formdata.role
+    table
+      caption
+        h2 Form data
+      tr
+        th Key 
+        th Value 
+      each value, key in formdata
+        tr 
+          td= key 
+          td= value
+  else
+    h2 No form data
+</file>
+
+<file path="app.js">
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
+
+var app = express();
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+
+module.exports = app;
+</file>
+
+<file path="package.json">
+{
+  "name": "csc305fa26project",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "^4.22.3",
+    "http-errors": "~1.6.3",
+    "morgan": "^1.12.1",
+    "pug": "^3.0.4"
+  }
+}
+</file>
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Directory for instrumented libs generated by jscoverage/JSCover
+lib-cov
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Bower dependency directory (https://bower.io/)
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Snowpack dependency directory (https://snowpack.dev/)
+web_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env
+.env.*
+!.env.example
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+out
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+.output
+
+# Gatsby files
+.cache/
+# Comment in the public line in if your project uses Gatsby and not Next.js
+# https://nextjs.org/blog/next-9-1#public-directory-support
+# public
+
+# vuepress build output
+.vuepress/dist
+
+# vuepress v2.x temp directory
+.temp
+
+# Sveltekit cache directory
+.svelte-kit/
+
+# vitepress build output
+**/.vitepress/dist
+
+# vitepress cache directory
+**/.vitepress/cache
+
+# Docusaurus cache and generated files
+.docusaurus
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# Firebase cache directory
+.firebase/
+
+# TernJS port file
+.tern-port
+
+# Stores Visual Studio Code versions used for testing Visual Studio Code extensions
+.vscode-test
+
+# pnpm
+.pnpm-store
+
+# yarn v3
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Vite files
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+.vite/
+
+# Astro generated types
+.astro/
+
+# Turbo Repo
+.turbo
+</file>
+
+</files>
